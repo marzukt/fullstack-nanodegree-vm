@@ -9,5 +9,5 @@ CREATE DATABASE tournament;
 CREATE TABLE players ( id SERIAL,
                        player_name TEXT);
 CREATE TABLE matches (match_id SERIAL,
-                      player1_id int /*references players(id)*/,
-                      player2_id int /*references players(id)*/);
+                      loser int /*references players(id)*/,
+                      winner int);
