@@ -74,12 +74,13 @@ def playerStandings():
     db = connect()
     c = db.cursor()
     sql=('select *, '
-         '(select count(*) from matches where winner=id), '
-         '(select count(*) from matches where id in (winner, loser))'
-         'from players;')
+         '(select count(*) from matches where winner=id) as Wins, '
+         '(select count(*) from matches where id in (winner, loser)) as Played '
+         'from players '
+         'order by Wins desc;')
     c.execute(sql)
     standings = c.fetchall()
-    #print(standings)
+    # print(standings)
     db.close()
     return standings
 
@@ -95,7 +96,7 @@ def reportMatch(winner, loser):
     db = connect()
     c = db.cursor()
     sql = 'insert into matches (winner, loser) values (%d, %d);' % (winner, loser)
-    #print(sql)
+    # print(sql)
     c.execute(sql)
     db.commit()
     db.close()
