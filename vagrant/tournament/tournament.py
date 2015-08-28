@@ -35,7 +35,6 @@ def countPlayers():
     c = db.cursor()
     c.execute('select count(*) from players;')
     playerCount = c.fetchall()[0][0]
-    db.commit()
     db.close()
     return playerCount
 
@@ -81,7 +80,6 @@ def playerStandings():
     c.execute(sql)
     standings = c.fetchall()
     #print(standings)
-    db.commit()
     db.close()
     return standings
 
@@ -96,7 +94,7 @@ def reportMatch(winner, loser):
     """
     db = connect()
     c = db.cursor()
-    sql = 'insert into matches (loser,winner) values (%d, %d);' % (loser, winner)
+    sql = 'insert into matches (winner, loser) values (%d, %d);' % (winner, loser)
     #print(sql)
     c.execute(sql)
     db.commit()
