@@ -114,6 +114,22 @@ def swissPairings():
     """
     standings = playerStandings()
     pairings =[]
+    # check if even number of players
+    if len(standings)%2 != 0:
+        # Retrieve players with byes from the db
+        db = connect()
+        c = db.cursor()
+        # matches with byes have only a winner
+        sql = 'select winner from matches where loser is null'
+        c.execute(sql)
+        playersWithByes = c.fetchall()
+        db.close()
+        # find highest ranked player without a bye and give them a bye
+        for player in standings:
+            if player[0] not in playersWithByes:
+                reportMatch(player[0],'NULL')
+                standings.pop(player)
+                break
     # Cycle through the ordered standings 2 at a time pairing the first
     # player with the second
     for i in range(0,len(standings),2):
@@ -124,6 +140,7 @@ def swissPairings():
 
 def swissPairingsNew():
     standings = playerStandings()
+    return standings
 def checkRematch(player1,player2):
     """Boolean to determine  whether the match is a rematch
     """
