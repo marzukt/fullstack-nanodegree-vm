@@ -72,11 +72,7 @@ def playerStandings():
     """
     db = connect()
     c = db.cursor()
-    sql=('select *, '
-         '(select count(*) from matches where winner=id) as Wins, '
-         '(select count(*) from matches where id in (winner, loser)) as Played '
-         'from players '
-         'order by Wins desc;')
+    sql=('select * from standings;')
     c.execute(sql)
     standings = c.fetchall()
     print "Standings are:"
@@ -126,6 +122,8 @@ def swissPairings():
     print(pairings)
     return pairings
 
+def swissPairingsNew():
+    standings = playerStandings()
 def checkRematch(player1,player2):
     """Boolean to determine  whether the match is a rematch
     """

@@ -11,3 +11,9 @@ CREATE TABLE players ( id SERIAL,
 CREATE TABLE matches (match_id SERIAL,
                       loser int /*references players(id)*/,
                       winner int);
+CREATE OR REPLACE VIEW standings AS
+    select *,
+    (select count(*) from matches where winner=id) as Wins,
+    (select count(*) from matches where id in (winner, loser)) as Played
+    from players
+    order by Wins desc;
