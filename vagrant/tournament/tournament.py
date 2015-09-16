@@ -79,7 +79,8 @@ def playerStandings():
          'order by Wins desc;')
     c.execute(sql)
     standings = c.fetchall()
-    # print(standings)
+    print "Standings are:"
+    print(standings)
     db.close()
     return standings
 
@@ -121,19 +122,47 @@ def swissPairings():
     # player with the second
     for i in range(0,len(standings),2):
         pairings.append((standings[i][0],standings[i][1], standings[i+1][0], standings[i+1][1]))
+    print "Pairings are"
+    print(pairings)
     return pairings
 
-def checkRematch():
+def checkRematch(player1,player2):
     """Boolean to determine  whether the match is a rematch
     """
+    player1 = player1
+    player2 = player2
     db = connect()
     c = db.cursor()
     sql=('select count(*) '
-         'from standings '
-         'where ((loser == player1 and winner == player2) '
-         ' or (loser == player1 and winner == player2))')
+         'from matches '
+         'where ((loser = {0} and winner = {1}) '
+         ' or (loser = {1} and winner = {0}))'.format(player1,player2))
     print(sql)
     c.execute(sql)
     matchCount = c.fetchall()[0][0]
+    db.close()
     if matchCount >= 1: return True
     else: return False
+
+def topOpponent(player1):
+    """For a given player return top unplayed opponent
+    """
+    player1 = player1
+    db = connect()
+    c = db.cursor()
+    sql=('select *, '
+         '(select count(*) from matches where winner=id) as Wins, '
+         '(select count(*) from matches where id in (winner, loser)) as Played '
+         'from players '
+         'where id in (select winner as players from matches '
+         'where {0} not in (winner,loser) UNION '
+         'select loser as players from matches '
+         'where {0} not in (winner,loser)) '
+         'order by Wins desc;'.format(player1))
+    print(sql)
+    c.execute(sql)
+    opponent = c.fetchall()[0]
+    db.close()
+    return opponent
+
+
