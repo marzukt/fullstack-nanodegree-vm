@@ -123,3 +123,17 @@ def swissPairings():
         pairings.append((standings[i][0],standings[i][1], standings[i+1][0], standings[i+1][1]))
     return pairings
 
+def checkRematch():
+    """Boolean to determine  whether the match is a rematch
+    """
+    db = connect()
+    c = db.cursor()
+    sql=('select count(*) '
+         'from standings '
+         'where ((loser == player1 and winner == player2) '
+         ' or (loser == player1 and winner == player2))')
+    print(sql)
+    c.execute(sql)
+    matchCount = c.fetchall()[0][0]
+    if matchCount >= 1: return True
+    else: return False
