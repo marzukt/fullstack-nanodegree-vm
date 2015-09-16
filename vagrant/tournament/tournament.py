@@ -117,11 +117,9 @@ def swissPairings():
     """
     standings = playerStandings()
     pairings =[]
-    print(standings)
-    print(len(standings))
+    # Cycle through the ordered standings 2 at a time pairing the first
+    # player with the second
     for i in range(0,len(standings),2):
-        print(standings[i][0],standings[i][1], standings[i+1][0], standings[i+1][1])
         pairings.append((standings[i][0],standings[i][1], standings[i+1][0], standings[i+1][1]))
-    print(pairings)
     return pairings
 
