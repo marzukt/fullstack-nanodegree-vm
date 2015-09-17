@@ -119,7 +119,9 @@ def swissPairings():
         name2: the second player's name
     """
     standings = playerStandings()
+    # create a list to hold the match pairings to return
     pairings =[]
+    # create a list to keep track of already paired players
     paired = []
     # check if even number of players
     if len(standings)%2 != 0:
@@ -135,22 +137,14 @@ def swissPairings():
         for player in standings:
             if player[0] not in playersWithByes:
                 reportMatch(player[0],'NULL')
+                paired.append(player[0])
                 standings.remove(player)
                 break
-    # Cycle through the ordered standings 2 at a time pairing the first
-    # player with the second
-    #for i in range(0,len(standings),2):
-        #pairings.append((standings[i][0],standings[i][1], standings[i+1][0], standings[i+1][1]))
+
     for player in standings:
-        #for pair in pairings:
-            #paired.append(pair[0])
-            #paired.append(pair[2])
-        #paired.append(player[0])
-        paired.append(0)
-        paired.append(0)
-        opponent = topOpponent(player[0], tuple(paired))
-        pairings.append((player[0], player[1], opponent[0], opponent[1]))
         paired.append(player[0])
+        opponent = topOpponent(player[0], paired)
+        pairings.append((player[0], player[1], opponent[0], opponent[1]))
         paired.append(opponent[0])
         print "I am removing: {}".format(player[0])
         standings.remove(player)
@@ -186,6 +180,9 @@ def checkRematch(player1,player2):
 def topOpponent(player1,paired):
     """For a given player return top unplayed opponent
     """
+    sqlpaired = ','.join( str(a) for a in paired)
+    print "printing not in"
+    print sqlpaired
     player1 = player1
     print "finding opponent for {}".format(player1)
     db = connect()
@@ -196,8 +193,8 @@ def topOpponent(player1,paired):
          'where {0} not in (winner,loser) UNION '
          'select loser as players from matches '
          'where {0} not in (winner,loser)) '
-         'and id not in {1}'
-         'order by Wins desc;'.format(player1,paired))
+         'and id not in ({1})'
+         'order by Wins desc;'.format(player1,sqlpaired))
     print(sql)
     c.execute(sql)
     #opponent = c.fetchall()[0]
