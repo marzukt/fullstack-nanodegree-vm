@@ -187,22 +187,19 @@ def topOpponent(player1,paired):
         matches: the number of matches the player has played
 
     """
-    # create a string of comma seperated id's
-    sqlpaired = ','.join(str(a) for a in paired)
-    # player1 = player1
-    #print "finding opponent for {}".format(player1)
     db = connect()
     c = db.cursor()
     # query database for a list of unplayed opponents
+    # exclude players that have already been paired in this round
     sql=('select * '
          'from standings '
          'where id in (select winner as players from matches '
-         'where {0} not in (winner,loser) UNION '
+         'where %s not in (winner,loser) UNION '
          'select loser as players from matches '
-         'where {0} not in (winner,loser)) '
-         'and id not in ({1})'
-         'order by Wins desc;'.format(player1,sqlpaired))
-    c.execute(sql)
+         'where %s not in (winner,loser)) '
+         'and NOT(id = ANY(%s))' # postgresql ANY command to use list as IN
+         'order by Wins desc;')
+    c.execute(sql,(player1,player1,paired))
     opponent = c.fetchall()[0]
     db.close()
     return opponent
