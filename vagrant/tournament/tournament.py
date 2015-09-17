@@ -20,10 +20,16 @@ def deleteMatches():
     db.close()
 
 def deletePlayers():
-    """Remove all the player records from the database."""
+    """Remove all the player records from the database.
+
+       Note also removes dependant tables!!!
+
+    """
     db = connect()
     c = db.cursor()
-    c.execute('TRUNCATE TABLE players;')
+    # use cascade to truncate matches at the same time
+    # due to foriegn key dependacies
+    c.execute('TRUNCATE TABLE players CASCADE;')
     db.commit()
     db.close()
 

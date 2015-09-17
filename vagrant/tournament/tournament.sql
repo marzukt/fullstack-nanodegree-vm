@@ -5,12 +5,14 @@
 --
 -- You can write comments in this file by starting them with two dashes, like
 -- these lines here.
+DROP DATABASE tournament;
 CREATE DATABASE tournament;
-CREATE TABLE players ( id SERIAL,
+\c tournament;
+CREATE TABLE players ( id SERIAL PRIMARY KEY,
                        player_name TEXT);
-CREATE TABLE matches (match_id SERIAL,
-                      loser int /*references players(id)*/,
-                      winner int);
+CREATE TABLE matches (match_id SERIAL PRIMARY KEY,
+                      loser int references players(id),
+                      winner int references players(id));
 CREATE OR REPLACE VIEW standings AS
     select *,
     (select count(*) from matches where winner=id) as Wins,
