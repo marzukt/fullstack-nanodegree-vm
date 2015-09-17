@@ -81,8 +81,6 @@ def playerStandings():
     sql=('select * from standings;')
     c.execute(sql)
     standings = c.fetchall()
-    print "Standings are:"
-    print(standings)
     db.close()
     return standings
 
@@ -123,7 +121,7 @@ def swissPairings():
     pairings =[]
     # create a list to keep track of already paired players
     paired = []
-    # check if even number of players
+    # If there are an uneven number of players give one a bye
     if len(standings)%2 != 0:
         # Retrieve players with byes from the db
         db = connect()
@@ -141,19 +139,16 @@ def swissPairings():
                 standings.remove(player)
                 break
 
+    # Pair the remaining players
     for player in standings:
         paired.append(player[0])
         opponent = topOpponent(player[0], paired)
         pairings.append((player[0], player[1], opponent[0], opponent[1]))
         paired.append(opponent[0])
-        print "I am removing: {}".format(player[0])
         standings.remove(player)
         for player in standings:
             if player[0] == opponent[0]:
-                print "I am removing: {}".format(player[0])
                 standings.remove(player)
-    print "Pairings are"
-    print(pairings)
     return pairings
 
 def swissPairingsNew():
@@ -178,15 +173,28 @@ def checkRematch(player1,player2):
     else: return False
 
 def topOpponent(player1,paired):
-    """For a given player return top unplayed opponent
+    """For a given player returns the top unplayed opponent
+
+    Args:
+        player1: id of the player for whom to return the top unplayed opponent
+        paired: list of id's for players who have already been paired
+                in this round
+
+    Returns:
+      A tuple of the opponents standings:
+        id: the player's unique id (assigned by the database)
+        name: the player's full name (as registered)
+        wins: the number of matches the player has won
+        matches: the number of matches the player has played
+
     """
-    sqlpaired = ','.join( str(a) for a in paired)
-    print "printing not in"
-    print sqlpaired
-    player1 = player1
-    print "finding opponent for {}".format(player1)
+    # create a string of comma seperated id's
+    sqlpaired = ','.join(str(a) for a in paired)
+    # player1 = player1
+    #print "finding opponent for {}".format(player1)
     db = connect()
     c = db.cursor()
+    # query database for a list of unplayed opponents
     sql=('select * '
          'from standings '
          'where id in (select winner as players from matches '
@@ -195,13 +203,8 @@ def topOpponent(player1,paired):
          'where {0} not in (winner,loser)) '
          'and id not in ({1})'
          'order by Wins desc;'.format(player1,sqlpaired))
-    print(sql)
     c.execute(sql)
-    #opponent = c.fetchall()[0]
-    opponent = c.fetchall()
-    print "print opponents"
-    print(opponent)
-    opponent = opponent[0]
+    opponent = c.fetchall()[0]
     db.close()
     return opponent
 
