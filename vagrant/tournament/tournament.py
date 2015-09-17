@@ -184,10 +184,8 @@ def topOpponent(player1,paired):
     print "finding opponent for {}".format(player1)
     db = connect()
     c = db.cursor()
-    sql=('select *, '
-         '(select count(*) from matches where winner=id) as Wins, '
-         '(select count(*) from matches where id in (winner, loser)) as Played '
-         'from players '
+    sql=('select * '
+         'from standings '
          'where id in (select winner as players from matches '
          'where {0} not in (winner,loser) UNION '
          'select loser as players from matches '
