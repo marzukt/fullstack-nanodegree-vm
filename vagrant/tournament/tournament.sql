@@ -11,7 +11,7 @@ CREATE DATABASE tournament;
 CREATE TABLE players ( id SERIAL PRIMARY KEY,
                        player_name TEXT);
 CREATE TABLE matches (match_id SERIAL PRIMARY KEY,
-                      loser int references players(id),
+                      loser int NULL references players(id),
                       winner int references players(id));
 CREATE OR REPLACE VIEW standings AS
     select *,

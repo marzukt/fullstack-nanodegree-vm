@@ -137,7 +137,7 @@ def swissPairings():
         # find highest ranked player without a bye and give them a bye
         for player in standings:
             if player[0] not in playersWithByes:
-                reportMatch(player[0],'NULL')
+                reportMatch(player[0],None)
                 paired.append(player[0])
                 standings.remove(player)
                 break
