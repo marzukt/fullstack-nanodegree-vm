@@ -10,6 +10,7 @@ tournament_test.py - test file for the functions in tournament.py
 #Prerequisites:
 PostgreSQL 9.3.9
 Python 2.7+
+psycopg2  python module
 
 ##Cofiguring the db:
 1) Open PostgreSQL `psql`
